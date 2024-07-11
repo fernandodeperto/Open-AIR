@@ -1,0 +1,118 @@
+substitutions:
+  name: "open-air-mini"
+  friendly_name: "Open Air Mini"
+
+esphome:
+  name: "${name}"
+  friendly_name: "${friendly_name}"
+  name_add_mac_suffix: false
+  platform: ESP32
+  board: esp32dev
+
+  project:
+    name: Flamingo-tech.Open-AIR
+    version: "1.0"
+
+logger:
+
+api:
+
+ota:
+  platform: esphome
+
+dashboard_import:
+  package_import_url: github://fernandodeperto/Open-AIR/Open-AIR-Mini/Software/open-air-mini.yaml@support-importing
+  import_full_config: false
+
+wifi:
+  ap:
+
+web_server:
+  port: 80
+
+captive_portal:
+
+i2c:
+#I2C For Sensor 2
+- id: i2c_sensor_2
+  sda: GPIO19
+  scl: GPIO18
+  scan: false
+  frequency: 400kHz
+#I2C For Sensor 1
+- id: i2c_sensor_1
+  sda: GPIO16
+  scl: GPIO4
+  scan: false
+  frequency: 400kHz
+
+#For version <1.4.0 use: (remove the # and remove above sensor pins)
+#uart:
+#UART For Sensor 2
+ #- rx_pin: GPIO13
+   #tx_pin: GPIO12
+   #baud_rate: 9600
+   #id: uart_sensor_2
+#UART For Sensor 1
+ #- rx_pin: GPIO25
+   #tx_pin: GPIO26
+   #baud_rate: 9600
+   #id: uart_sensor_1
+
+#i2c:
+#I2C For Sensor 2
+#- id: i2c_sensor_2
+  #sda: GPIO19
+  #scl: GPIO18
+  #scan: false
+  #frequency: 400kHz
+#I2C For Sensor 1
+#- id: i2c_sensor_1
+  #sda: GPIO16
+  #scl: GPIO4
+  #scan: false
+  #frequency: 400kHz
+
+# Status led
+status_led:
+  pin:
+    number: GPIO33
+
+#PWM output for controlling the motor.
+output:
+  - platform: ledc
+    pin: GPIO15
+    inverted: true
+    id: open_air_mini
+
+fan:
+  - platform: speed
+    output: open_air_mini
+    name: "Open AIR Mini"
+    id: fan_motor
+
+sensor:
+  - platform: pulse_counter
+    pin: GPIO14
+    unit_of_measurement: 'RPM'
+    name: 'AIR Mini RPM'
+
+  - platform: wifi_signal # Reports the WiFi signal strength/RSSI in dB
+    name: "WiFi Signal dB"
+    id: wifi_signal_db
+    update_interval: 60s
+    entity_category: "diagnostic"
+
+  - platform: copy # Reports the WiFi signal strength in %
+    source_id: wifi_signal_db
+    name: "WiFi Signal Percent"
+    filters:
+      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+    unit_of_measurement: "Signal %"
+    entity_category: "diagnostic"
+    device_class: ""
+
+packages:
+  disconnected_mode_base: !include disconnected-mode.yaml
+  disconnected_mode_without_humidity: !include disconnected-mode-without-humidity.yaml
+  # disconnected_mode_with_humidity: !include disconnected-mode-with-humidity.yaml
