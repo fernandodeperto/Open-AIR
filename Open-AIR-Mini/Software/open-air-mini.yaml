@@ -92,6 +92,7 @@ output:
 
 fan:
   - platform: speed
+    id: fan_motor
     output: open_air_mini
     name: None
 
