@@ -99,5 +99,5 @@ fan:
 sensor:
   - platform: pulse_counter
     pin: GPIO14
-    unit_of_measurement: 'RPM'
-    name: 'Fan speed'
+    unit_of_measurement: RPM
+    name: Fan speed
